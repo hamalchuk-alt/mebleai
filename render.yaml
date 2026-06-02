@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: mebliai
+    env: node
+    plan: starter
+    buildCommand: ""
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 24
+      - key: OPENAI_TEXT_MODEL
+        value: gpt-5
+      - key: OPENAI_API_KEY
+        sync: false

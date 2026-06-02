@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MebliAI</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="brand">
+        <p>Custom Kitchen AI</p>
+        <h1>MebliAI</h1>
+        <span>Фото кімнати + опис + розміри = AI-візуалізація, орієнтовний прорахунок і заявка для менеджера.</span>
+      </aside>
+
+      <section class="phone">
+        <header class="top">
+          <div>
+            <span id="apiStatus">перевірка AI...</span>
+            <strong>MebliAI</strong>
+          </div>
+          <button id="crmTab" type="button">CRM</button>
+        </header>
+
+        <nav class="steps">
+          <button class="active" data-step="room" type="button">Кімната</button>
+          <button data-step="brief" type="button">Опис</button>
+          <button data-step="render" type="button">AI</button>
+          <button data-step="lead" type="button">Заявка</button>
+        </nav>
+
+        <section class="screen active" data-view="room">
+          <h2>Покажіть кімнату</h2>
+          <div class="capture">
+            <video id="camera" playsinline muted hidden></video>
+            <img id="roomImage" src="/assets/room-ar-preview.png" alt="Кімната" />
+            <div class="capture-label">Фото або камера клієнта</div>
+          </div>
+          <input id="upload" type="file" accept="image/*" hidden />
+          <div class="grid three">
+            <button class="ghost" id="startCamera" type="button">Камера</button>
+            <button class="ghost" id="captureFrame" type="button">Кадр</button>
+            <button class="ghost" id="uploadBtn" type="button">Фото</button>
+          </div>
+          <button class="primary" data-next="brief" type="button">Далі</button>
+        </section>
+
+        <section class="screen" data-view="brief">
+          <h2>Опис і розміри</h2>
+          <div class="choice-row" data-group="layout">
+            <button class="active" data-layout="Пряма кухня" type="button">Пряма</button>
+            <button data-layout="Кутова кухня" type="button">Кутова</button>
+            <button data-layout="Кухня з островом" type="button">Острів</button>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span>Розміри</span>
+              <strong id="dimsOut">360 x 260 x 65 см</strong>
+            </div>
+            <div class="grid three">
+              <label>Стіна<input id="width" type="number" value="360" /></label>
+              <label>Висота<input id="height" type="number" value="260" /></label>
+              <label>Глибина<input id="depth" type="number" value="65" /></label>
+            </div>
+            <label>Примітка<input id="note" value="вода справа, розетка під духовку, холодильник зліва" /></label>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span>AI-питання</span>
+              <strong>технічні точки</strong>
+            </div>
+            <label>Де вода?<input id="water" value="справа, 70 см від кута" /></label>
+            <label>Де розетки?<input id="power" value="під духовку і над стільницею" /></label>
+            <label>Газ є?<input id="gas" value="ні, індукція" /></label>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span>Матеріали</span>
+              <strong id="paletteOut">Світлий дуб + теплий білий</strong>
+            </div>
+            <div id="paletteGrid" class="palette-grid"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span>Комплектація</span>
+              <strong id="packageOut">Ламінат, HPL, Стандарт</strong>
+            </div>
+            <div class="option-line" data-group="facade">
+              <span>Фасади</span>
+              <button class="active" data-option="facade" data-value="standard">Ламінат</button>
+              <button data-option="facade" data-value="painted">Фарбовані</button>
+              <button data-option="facade" data-value="premium">Шпон</button>
+            </div>
+            <div class="option-line" data-group="countertop">
+              <span>Стільниця</span>
+              <button class="active" data-option="countertop" data-value="laminate">HPL</button>
+              <button data-option="countertop" data-value="quartz">Кварц</button>
+              <button data-option="countertop" data-value="compact">Compact</button>
+            </div>
+            <div class="option-line" data-group="hardware">
+              <span>Фурнітура</span>
+              <button class="active" data-option="hardware" data-value="standard">Стандарт</button>
+              <button data-option="hardware" data-value="blum">Blum</button>
+              <button data-option="hardware" data-value="premium">Premium</button>
+            </div>
+            <div class="toggles">
+              <label><input id="led" type="checkbox" checked /> LED</label>
+              <label><input id="install" type="checkbox" checked /> Монтаж</label>
+            </div>
+          </div>
+
+          <label class="textarea-label">Опис клієнта
+            <textarea id="description" rows="5">Хочу сучасну теплу кухню до стелі, без ручок, зі світлим деревом, білими верхніми шафами, темною стільницею і м'якою підсвіткою.</textarea>
+          </label>
+          <button class="primary" id="renderBtn" type="button">Зробити AI-візуалізацію</button>
+        </section>
+
+        <section class="screen" data-view="render">
+          <h2>AI-візуалізація</h2>
+          <div class="render-stage" id="renderStage">
+            <img id="renderRoom" src="/assets/room-ar-preview.png" alt="Кімната" />
+            <img id="renderFurniture" src="/assets/kitchen-ar.png" alt="Кухня" />
+          </div>
+          <div class="estimate">
+            <span>Орієнтовно</span>
+            <strong id="estimateOut">-</strong>
+          </div>
+          <div id="variantGrid" class="variant-grid"></div>
+          <button class="ghost wide" id="moreVariants" type="button">Згенерувати ще 3 варіанти</button>
+          <p id="summary" class="summary">AI підготує опис після генерації.</p>
+          <button class="primary" data-next="lead" type="button">Передати на прорахунок</button>
+        </section>
+
+        <section class="screen" data-view="lead">
+          <h2>Заявка</h2>
+          <div class="summary-card">
+            <div><span>Розміри</span><strong id="leadDims">-</strong></div>
+            <div><span>Матеріали</span><strong id="leadColor">-</strong></div>
+            <div><span>Комплектація</span><strong id="leadPackage">-</strong></div>
+            <div><span>Бюджет</span><strong id="leadEstimate">-</strong></div>
+          </div>
+          <form id="leadForm">
+            <label>Ім'я<input id="clientName" required placeholder="Ваше ім'я" /></label>
+            <label>Телефон<input id="clientPhone" required placeholder="+48 000 000 000" /></label>
+            <label>Місто<input id="clientCity" placeholder="Wroclaw" /></label>
+            <button class="primary" type="submit">Надіслати заявку</button>
+          </form>
+          <div id="leadOk" class="ok" hidden>Заявку збережено в CRM.</div>
+        </section>
+
+        <section class="screen" data-view="crm">
+          <h2>CRM менеджера</h2>
+          <button class="ghost wide" id="reloadLeads" type="button">Оновити заявки</button>
+          <div id="leadsList" class="leads"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
